@@ -146,3 +146,85 @@
   .no-print { display: none !important; }
   .print-page { page-break-after: always; }
 }
+/* ── PASTE THESE ADDITIONS INTO THE BOTTOM OF src/index.css ── */
+
+/* Mobile padding for all main page content */
+@media (max-width: 768px) {
+  /* Tighter padding on mobile */
+  .p-8 { padding: 1.25rem !important; }
+  .px-8 { padding-left: 1.25rem !important; padding-right: 1.25rem !important; }
+  .py-8 { padding-top: 1.5rem !important; padding-bottom: 1.5rem !important; }
+  .py-5 { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+
+  /* Stack grids on mobile */
+  .grid-cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .grid-cols-3 { grid-template-columns: repeat(1, minmax(0, 1fr)) !important; }
+  .grid-cols-2 { grid-template-columns: repeat(1, minmax(0, 1fr)) !important; }
+
+  /* Full width buttons on mobile */
+  .btn-primary { width: 100%; justify-content: center; }
+
+  /* Engagement card stacks */
+  .flex.items-start.gap-5 { flex-direction: column; gap: 0.75rem; }
+  .flex.items-start.gap-8 { flex-direction: column; gap: 1rem; }
+
+  /* Header actions stack */
+  .flex.items-start.justify-between { flex-direction: column; gap: 1rem; }
+  .flex.items-center.gap-3.flex-shrink-0 { flex-wrap: wrap; }
+
+  /* Stage card actions on mobile */
+  .flex.items-center.gap-2.flex-shrink-0 { 
+    flex-direction: column; 
+    align-items: stretch;
+    width: 100%;
+    margin-top: 0.75rem;
+  }
+
+  /* Tabs scroll horizontally */
+  .flex.gap-1.mt-4 { 
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+  .flex.gap-1.mt-4::-webkit-scrollbar { display: none; }
+
+  /* Tables scroll on mobile */
+  .overflow-x-auto { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Section title size */
+  .text-4xl { font-size: 1.75rem !important; }
+  .text-3xl { font-size: 1.5rem !important; }
+
+  /* Progress ring smaller on mobile */
+  .max-w-6xl { max-width: 100% !important; }
+  .max-w-5xl { max-width: 100% !important; }
+  .max-w-4xl { max-width: 100% !important; }
+  .max-w-3xl { max-width: 100% !important; }
+  .max-w-2xl { max-width: 100% !important; }
+}
+
+/* Smooth drawer animation */
+@keyframes drawerIn {
+  from { transform: translateX(-100%); opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+.md\:hidden.fixed.top-0.left-0.bottom-0 {
+  animation: drawerIn 0.25s ease forwards;
+}
+
+/* Touch-friendly tap targets */
+@media (max-width: 768px) {
+  button, a, select, input { min-height: 40px; }
+  .badge { min-height: unset; }
+  
+  /* Larger stage status select on mobile */
+  select.input { font-size: 14px; }
+  
+  /* Engagement row stacks on mobile */
+  .card-hover .flex.items-center.gap-2.flex-shrink-0 {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 0.75rem;
+  }
+}
