@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LUMINA — Engagement Intelligence · MaLux</title>
+  <meta name="description" content="LUMINA is MaLux's proprietary client engagement intelligence framework. Every engagement leaves a structured, permanent record behind."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:#0a0a0f; --s1:#12121a; --s2:#1a1a26; --s3:#222235;
+      --border:#2a2a3f; --faint:#3a3a55;
+      --purple:#7c5cfc; --pL:#9d84fd; --pD:#5a3fd4;
+      --pink:#fc5c7d; --mint:#5cfcb8; --amber:#fcb85c;
+      --text:#e8e8f4; --muted:#6a6a8a; --white:#ffffff;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth;font-size:16px}
+    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;
+      -webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+    /* ── ANIMATED BG ── */
+    .bg-layer{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+    .bg-orb{position:absolute;border-radius:50%;filter:blur(80px);animation:orbFloat 12s ease-in-out infinite alternate}
+    .bg-orb-1{width:600px;height:400px;top:-100px;left:-100px;
+      background:radial-gradient(ellipse,rgba(124,92,252,.18),transparent 70%);animation-delay:0s}
+    .bg-orb-2{width:400px;height:300px;bottom:-50px;right:-80px;
+      background:radial-gradient(ellipse,rgba(252,92,125,.1),transparent 70%);animation-delay:-4s}
+    .bg-orb-3{width:300px;height:300px;top:50%;left:60%;
+      background:radial-gradient(ellipse,rgba(92,252,184,.06),transparent 70%);animation-delay:-8s}
+    .bg-grid{position:absolute;inset:0;
+      background:repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(124,92,252,.04) 40px),
+                repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(124,92,252,.04) 40px)}
+    @keyframes orbFloat{from{transform:translate(0,0) scale(1)}to{transform:translate(40px,30px) scale(1.1)}}
+
+    /* ── LAYOUT ── */
+    .wrap{max-width:1120px;margin:0 auto;padding:0 2rem;position:relative;z-index:1}
+    section{position:relative;z-index:1}
+
+    /* ── NAV ── */
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;
+      background:rgba(10,10,15,.8);backdrop-filter:blur(20px);
+      border-bottom:1px solid rgba(42,42,63,.6);transition:all .3s}
+    .nav-i{display:flex;align-items:center;justify-content:space-between;
+      padding:.9rem 2rem;max-width:1120px;margin:0 auto}
+    .logo-wrap{display:flex;align-items:center;gap:.65rem;text-decoration:none}
+    .logo-name{font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;color:var(--text)}
+    .logo-name em{color:var(--pL);font-style:normal}
+    .logo-tag{font-family:'DM Mono',monospace;font-size:.55rem;color:var(--muted);
+      letter-spacing:.18em;text-transform:uppercase;display:block;margin-top:2px}
+    .nav-links{display:flex;align-items:center;gap:.25rem}
+    .nav-tab{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--muted);
+      background:none;border:none;cursor:pointer;padding:.5rem 1rem;border-radius:.5rem;
+      transition:all .2s;text-decoration:none}
+    .nav-tab:hover,.nav-tab.active{color:var(--pL);background:rgba(124,92,252,.08)}
+    .nav-cta{font-family:'Syne',sans-serif;font-weight:700;font-size:.8rem;
+      background:var(--purple);color:#fff;border:none;cursor:pointer;
+      padding:.55rem 1.2rem;border-radius:.5rem;transition:all .2s;text-decoration:none}
+    .nav-cta:hover{background:var(--pL);box-shadow:0 4px 20px rgba(124,92,252,.4);transform:translateY(-1px)}
+    .hamburger{display:none;flex-direction:column;gap:4px;background:none;border:none;cursor:pointer;padding:.5rem}
+    .hamburger span{display:block;width:20px;height:2px;background:var(--muted);border-radius:2px;transition:all .3s}
+
+    /* ── TABS ── */
+    .tab-panels{display:none}
+    .tab-panel{display:none}
+    .tab-panel.active{display:block}
+
+    /* ── HERO ── */
+    .hero{min-height:100vh;display:flex;align-items:center;padding:7rem 0 4rem}
+    .hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+    .hero-eyebrow{display:inline-flex;align-items:center;gap:.5rem;
+      font-family:'DM Mono',monospace;font-size:.65rem;color:var(--pL);
+      letter-spacing:.2em;text-transform:uppercase;
+      background:rgba(124,92,252,.08);border:1px solid rgba(124,92,252,.2);
+      padding:.35rem .9rem;border-radius:100px;margin-bottom:1.5rem}
+    .pulse{width:6px;height:6px;border-radius:50%;background:var(--purple);
+      animation:pulse 2s ease-in-out infinite}
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+    .hero-title{font-family:'Syne',sans-serif;font-weight:800;
+      font-size:clamp(2.4rem,5vw,3.8rem);line-height:1.05;letter-spacing:-.03em;
+      color:var(--text);margin-bottom:1.25rem}
+    .hero-title .hl{color:var(--pL)}
+    .hero-title .hl2{
+      background:linear-gradient(135deg,var(--purple),var(--pink));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .hero-sub{color:var(--muted);font-size:1.05rem;line-height:1.75;
+      max-width:480px;margin-bottom:2.5rem}
+    .hero-sub strong{color:var(--text);font-weight:500}
+    .hero-actions{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:2.5rem}
+    .btn{display:inline-flex;align-items:center;gap:.5rem;font-family:'Syne',sans-serif;
+      font-weight:700;font-size:.875rem;padding:.7rem 1.6rem;border-radius:.6rem;
+      text-decoration:none;transition:all .2s;cursor:pointer;border:none;white-space:nowrap}
+    .btn-p{background:var(--purple);color:#fff}
+    .btn-p:hover{background:var(--pL);box-shadow:0 6px 28px rgba(124,92,252,.4);transform:translateY(-2px)}
+    .btn-g{background:transparent;color:var(--muted);border:1px solid var(--border)}
+    .btn-g:hover{border-color:var(--purple);color:var(--pL)}
+    .hero-proof{display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap}
+    .proof-item{display:flex;align-items:center;gap:.4rem;
+      font-family:'DM Mono',monospace;font-size:.7rem;color:var(--muted)}
+    .proof-dot{width:4px;height:4px;border-radius:50%;background:var(--mint)}
+
+    /* ── APP WINDOW MOCK ── */
+    .app-window{background:var(--s1);border:1px solid var(--border);border-radius:1rem;
+      overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.6),0 0 0 1px rgba(124,92,252,.1);
+      transform:perspective(1000px) rotateY(-4deg) rotateX(2deg);
+      transition:transform .5s ease;animation:floatWindow 6s ease-in-out infinite alternate}
+    .app-window:hover{transform:perspective(1000px) rotateY(0deg) rotateX(0deg)}
+    @keyframes floatWindow{from{transform:perspective(1000px) rotateY(-4deg) rotateX(2deg) translateY(0)}
+      to{transform:perspective(1000px) rotateY(-4deg) rotateX(2deg) translateY(-8px)}}
+    .win-bar{background:var(--s2);border-bottom:1px solid var(--border);
+      padding:.65rem 1rem;display:flex;align-items:center;gap:.5rem}
+    .win-dot{width:10px;height:10px;border-radius:50%}
+    .win-url{flex:1;background:var(--bg);border-radius:.3rem;padding:.2rem .65rem;
+      font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);
+      margin:0 .75rem;letter-spacing:.02em}
+    .win-body{display:grid;grid-template-columns:180px 1fr;min-height:340px}
+    .win-sb{background:rgba(18,18,26,.9);border-right:1px solid var(--border);padding:1rem .75rem}
+    .win-logo{display:flex;align-items:center;gap:.4rem;padding-bottom:.75rem;
+      border-bottom:1px solid var(--border);margin-bottom:.75rem}
+    .win-logo-t{font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;color:var(--text)}
+    .win-logo-t em{color:var(--pL);font-style:normal}
+    .wn{display:flex;align-items:center;gap:.5rem;padding:.45rem .6rem;border-radius:.4rem;
+      font-size:.72rem;color:var(--muted);margin-bottom:.15rem;cursor:default}
+    .wn.a{background:rgba(124,92,252,.08);border:1px solid rgba(124,92,252,.15);color:var(--text)}
+    .wn-dot{width:7px;height:7px;border-radius:50%;background:var(--faint);flex-shrink:0}
+    .wn-dot.p{background:var(--purple)}
+    .win-main{padding:1.25rem}
+    .wm-h{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem}
+    .wm-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;color:var(--text)}
+    .wm-sub{font-family:'DM Mono',monospace;font-size:.6rem;color:var(--muted);margin-top:2px}
+    .wm-btn{background:var(--purple);color:#fff;font-family:'Syne',sans-serif;
+      font-size:.65rem;font-weight:700;padding:.35rem .8rem;border-radius:.35rem}
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;margin-bottom:1rem}
+    .stat{background:var(--s2);border:1px solid var(--border);border-radius:.5rem;padding:.65rem .5rem}
+    .stat-n{font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem}
+    .stat-l{font-family:'DM Mono',monospace;font-size:.55rem;color:var(--muted);margin-top:1px}
+    .e-card{background:var(--s2);border:1px solid var(--border);border-radius:.5rem;
+      padding:.75rem;margin-bottom:.4rem;transition:border-color .2s}
+    .e-card:hover{border-color:rgba(124,92,252,.3)}
+    .e-row{display:flex;align-items:center;gap:.65rem}
+    .e-ring{width:38px;height:38px;border-radius:50%;border:2.5px solid var(--purple);
+      display:flex;align-items:center;justify-content:center;
+      font-family:'Syne',sans-serif;font-size:.6rem;font-weight:700;color:var(--pL);flex-shrink:0}
+    .e-name{font-family:'Syne',sans-serif;font-weight:600;font-size:.8rem;color:var(--text)}
+    .e-meta{font-family:'DM Mono',monospace;font-size:.55rem;color:var(--muted);margin-top:1px}
+    .stages-bar{display:flex;gap:2px;margin-top:.45rem}
+    .sb{flex:1;height:3px;border-radius:2px;background:var(--faint)}
+    .sb.d{background:var(--mint)}.sb.a{background:var(--purple)}.sb.b{background:var(--pink)}
+    .badge{font-family:'DM Mono',monospace;font-size:.5rem;padding:.15rem .4rem;
+      border-radius:100px;border:1px solid}
+    .badge-p{background:rgba(124,92,252,.1);border-color:rgba(124,92,252,.3);color:var(--pL)}
+    .badge-m{background:rgba(92,252,184,.1);border-color:rgba(92,252,184,.3);color:var(--mint)}
+
+    /* ── SCROLL REVEAL ── */
+    .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+    .reveal.visible{opacity:1;transform:translateY(0)}
+    .reveal-left{opacity:0;transform:translateX(-24px);transition:opacity .7s ease,transform .7s ease}
+    .reveal-left.visible{opacity:1;transform:translateX(0)}
+    .reveal-right{opacity:0;transform:translateX(24px);transition:opacity .7s ease,transform .7s ease}
+    .reveal-right.visible{opacity:1;transform:translateX(0)}
+    .delay-1{transition-delay:.1s}.delay-2{transition-delay:.2s}
+    .delay-3{transition-delay:.3s}.delay-4{transition-delay:.4s}
+    .delay-5{transition-delay:.5s}
+
+    /* ── SECTION LABELS ── */
+    .s-label{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--pL);
+      letter-spacing:.2em;text-transform:uppercase;margin-bottom:.75rem}
+    .s-title{font-family:'Syne',sans-serif;font-weight:800;
+      font-size:clamp(1.75rem,4vw,2.75rem);letter-spacing:-.03em;
+      color:var(--text);line-height:1.1;margin-bottom:1rem}
+    .s-desc{color:var(--muted);line-height:1.75;max-width:560px}
+
+    /* ── DIVIDER ── */
+    hr.div{border:none;border-top:1px solid var(--border)}
+
+    /* ── FEATURES ── */
+    .features{padding:6rem 0}
+    .feat-intro{text-align:center;margin-bottom:4rem}
+    .feat-intro .s-desc{margin:0 auto}
+    .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+    .feat-card{background:var(--s1);border:1px solid var(--border);border-radius:1rem;
+      padding:2rem 1.75rem;position:relative;overflow:hidden;
+      transition:border-color .25s,transform .25s,box-shadow .25s}
+    .feat-card::after{content:'';position:absolute;inset:0;
+      background:linear-gradient(135deg,rgba(124,92,252,.06),transparent);
+      opacity:0;transition:opacity .25s}
+    .feat-card:hover{border-color:rgba(124,92,252,.35);transform:translateY(-3px);
+      box-shadow:0 12px 40px rgba(124,92,252,.12)}
+    .feat-card:hover::after{opacity:1}
+    .feat-icon{font-size:2rem;margin-bottom:1.25rem;display:block}
+    .feat-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;
+      color:var(--text);margin-bottom:.5rem}
+    .feat-desc{font-size:.875rem;color:var(--muted);line-height:1.65}
+    .feat-tag{display:inline-block;margin-top:.75rem;font-family:'DM Mono',monospace;
+      font-size:.6rem;color:var(--purple);letter-spacing:.1em;
+      background:rgba(124,92,252,.08);padding:.2rem .6rem;border-radius:100px}
+
+    /* ── HOW IT WORKS ── */
+    .how{padding:6rem 0;background:linear-gradient(180deg,transparent,rgba(124,92,252,.04),transparent)}
+    .how-inner{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start}
+    .step-list{display:flex;flex-direction:column;gap:0}
+    .step{display:flex;gap:1.25rem;padding:1.5rem 0;border-bottom:1px solid var(--border);
+      cursor:pointer;transition:all .2s}
+    .step:last-child{border-bottom:none}
+    .step:hover .step-num{background:rgba(124,92,252,.15);border-color:rgba(124,92,252,.4)}
+    .step.open .step-num{background:var(--purple);border-color:var(--purple);color:#fff}
+    .step-num{width:2.5rem;height:2.5rem;border-radius:50%;
+      background:var(--s2);border:1px solid var(--border);
+      display:flex;align-items:center;justify-content:center;
+      font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;color:var(--pL);
+      flex-shrink:0;transition:all .25s;margin-top:.1rem}
+    .step-body{}
+    .step-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;
+      color:var(--text);margin-bottom:.25rem}
+    .step-desc{font-size:.875rem;color:var(--muted);line-height:1.6;
+      max-height:0;overflow:hidden;transition:max-height .4s ease,opacity .4s}
+    .step.open .step-desc{max-height:200px;opacity:1}
+    .step:not(.open) .step-desc{opacity:0}
+    .how-visual{position:sticky;top:6rem}
+    .visual-card{background:var(--s1);border:1px solid var(--border);border-radius:1rem;
+      padding:1.75rem;min-height:320px;transition:all .5s}
+    .visual-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;
+      color:var(--text);margin-bottom:1rem}
+    /* visual panels */
+    .vpanel{display:none}.vpanel.show{display:block}
+
+    /* Maturity bar vis */
+    .mat-bar-wrap{margin-top:.75rem}
+    .mat-label{display:flex;justify-content:space-between;
+      font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);margin-bottom:.3rem}
+    .mat-bar{height:6px;background:var(--s3);border-radius:3px;overflow:hidden;margin-bottom:.6rem}
+    .mat-fill{height:100%;border-radius:3px;transition:width 1s ease;
+      background:linear-gradient(90deg,var(--purple),var(--pL))}
+
+    /* Stage progress vis */
+    .stage-list{display:flex;flex-direction:column;gap:.5rem}
+    .stage-item{display:flex;align-items:center;gap:.75rem}
+    .stage-icon{font-size:.9rem;flex-shrink:0}
+    .stage-name{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--muted);flex:1}
+    .stage-bar-wrap{width:100px}
+    .stage-bar{height:4px;background:var(--s3);border-radius:2px;overflow:hidden}
+    .stage-fill{height:100%;border-radius:2px;transition:width 1s .3s ease}
+    .sf-done{background:var(--mint)}.sf-active{background:var(--purple)}
+    .sf-empty{background:var(--faint)}.sf-blocked{background:var(--pink)}
+    .stage-pct{font-family:'DM Mono',monospace;font-size:.6rem;color:var(--muted);width:28px;text-align:right}
+
+    /* ── DEMO SECTION ── */
+    .demo-section{padding:6rem 0}
+    .demo-tabs{display:flex;gap:.5rem;margin-bottom:2rem;flex-wrap:wrap}
+    .dtab{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--muted);
+      background:var(--s1);border:1px solid var(--border);padding:.5rem 1.1rem;
+      border-radius:.5rem;cursor:pointer;transition:all .2s}
+    .dtab:hover{border-color:var(--faint);color:var(--text)}
+    .dtab.on{background:rgba(124,92,252,.1);border-color:rgba(124,92,252,.3);color:var(--pL)}
+    .demo-frame{background:var(--s1);border:1px solid var(--border);border-radius:1rem;
+      overflow:hidden;position:relative}
+    .demo-panel{display:none;padding:2rem}
+    .demo-panel.show{display:block;animation:fadeIn .4s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    /* screenshot mock panels */
+    .mock-screen{background:var(--s2);border:1px solid var(--border);border-radius:.75rem;
+      overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+    .mock-bar{background:var(--s3);padding:.6rem 1rem;display:flex;align-items:center;gap:.4rem;
+      border-bottom:1px solid var(--border)}
+    .mock-dot{width:8px;height:8px;border-radius:50%}
+    .mock-body{padding:1.25rem}
+
+    /* ── REPORT PREVIEW ── */
+    .report-section{padding:6rem 0}
+    .report-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:4rem;align-items:center}
+    .report-mock{background:var(--s1);border:1px solid var(--border);border-radius:1rem;
+      overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+    .rep-cover{background:linear-gradient(135deg,rgba(124,92,252,.15),rgba(252,92,125,.08));
+      padding:2rem;text-align:center;border-bottom:1px solid var(--border)}
+    .rep-logo-mark{margin:0 auto .75rem}
+    .rep-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:var(--text)}
+    .rep-meta{font-family:'DM Mono',monospace;font-size:.62rem;color:var(--muted);margin-top:.25rem}
+    .rep-score{display:inline-flex;align-items:center;gap:.75rem;
+      background:rgba(124,92,252,.12);border:1px solid rgba(124,92,252,.2);
+      padding:.4rem .9rem;border-radius:.5rem;margin-top:.75rem}
+    .rep-pct{font-family:'Syne',sans-serif;font-weight:700;color:var(--pL);font-size:.9rem}
+    .rep-delta{font-family:'DM Mono',monospace;font-size:.6rem;color:var(--mint)}
+    .rep-body{padding:1.25rem}
+    .rep-row{display:flex;align-items:center;gap:.6rem;padding:.55rem 0;
+      border-bottom:1px solid rgba(42,42,63,.5);font-family:'DM Mono',monospace;font-size:.7rem}
+    .rep-row:last-child{border-bottom:none}
+    .rep-num{color:var(--pL);font-weight:500;width:1.5rem;flex-shrink:0}
+    .rep-name{color:var(--muted)}
+    .rep-check{margin-left:auto;color:var(--mint);font-size:.8rem}
+    .checklist{list-style:none;margin-top:2rem}
+    .checklist li{display:flex;align-items:flex-start;gap:.75rem;padding:.75rem 0;
+      border-bottom:1px solid var(--border);font-size:.9rem;color:var(--muted)}
+    .checklist li:last-child{border-bottom:none}
+    .checklist li strong{color:var(--text);font-weight:500;display:block}
+    .chk{color:var(--mint);flex-shrink:0;margin-top:.1rem}
+
+    /* ── INQUIRY ── */
+    .inquiry{padding:6rem 0}
+    .inq-wrap{background:var(--s1);border:1px solid rgba(124,92,252,.25);border-radius:1.5rem;
+      padding:4rem 3.5rem;position:relative;overflow:hidden}
+    .inq-glow{position:absolute;top:-60px;left:50%;transform:translateX(-50%);
+      width:500px;height:200px;
+      background:radial-gradient(ellipse,rgba(124,92,252,.2),transparent 70%);pointer-events:none}
+    .inq-grid{display:grid;grid-template-columns:1fr 1fr;gap:3.5rem;align-items:start}
+    .inq-title{font-family:'Syne',sans-serif;font-weight:800;
+      font-size:clamp(1.75rem,3.5vw,2.5rem);letter-spacing:-.03em;color:var(--text);margin-bottom:1rem}
+    .inq-desc{color:var(--muted);line-height:1.75;margin-bottom:1.75rem}
+    .tags-row{display:flex;flex-wrap:wrap;gap:.5rem}
+    .tag{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);
+      background:var(--s2);border:1px solid var(--border);padding:.3rem .75rem;border-radius:100px}
+    /* form */
+    .form-group{margin-bottom:1.1rem}
+    .form-label{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);
+      text-transform:uppercase;letter-spacing:.1em;display:block;margin-bottom:.4rem}
+    .form-input,.form-select,.form-textarea{width:100%;background:var(--s2);
+      border:1px solid var(--border);border-radius:.6rem;
+      padding:.7rem 1rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.875rem;
+      transition:border-color .2s,box-shadow .2s;outline:none}
+    .form-input:focus,.form-select:focus,.form-textarea:focus{
+      border-color:rgba(124,92,252,.5);box-shadow:0 0 0 3px rgba(124,92,252,.1)}
+    .form-input::placeholder,.form-textarea::placeholder{color:var(--faint)}
+    .form-select{color:var(--muted);cursor:pointer}
+    .form-select option{background:var(--s2)}
+    .form-textarea{resize:vertical;min-height:100px}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+    .form-submit{width:100%;font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;
+      background:linear-gradient(135deg,var(--purple),var(--pD));color:#fff;
+      border:none;border-radius:.6rem;padding:.9rem;cursor:pointer;
+      transition:all .25s;margin-top:.5rem}
+    .form-submit:hover{background:linear-gradient(135deg,var(--pL),var(--purple));
+      box-shadow:0 8px 32px rgba(124,92,252,.4);transform:translateY(-2px)}
+    .form-note{font-family:'DM Mono',monospace;font-size:.62rem;color:var(--muted);
+      text-align:center;margin-top:.75rem}
+    .success-msg{display:none;text-align:center;padding:2rem}
+    .success-icon{font-size:3rem;margin-bottom:1rem}
+    .success-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1.5rem;color:var(--text);margin-bottom:.5rem}
+    .success-desc{color:var(--muted);font-size:.9rem}
+
+    /* ── FOOTER ── */
+    footer{border-top:1px solid var(--border);padding:2.5rem 0}
+    .foot-i{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+    .foot-copy{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted)}
+    .foot-links{display:flex;gap:1.5rem}
+    .foot-link{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted);
+      text-decoration:none;transition:color .15s}
+    .foot-link:hover{color:var(--pL)}
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:900px){
+      .hero-grid,.report-grid,.how-inner,.inq-grid{grid-template-columns:1fr}
+      .app-window{display:none}
+      .feat-grid{grid-template-columns:1fr 1fr}
+      .how-visual{position:static}
+    }
+    @media(max-width:600px){
+      .nav-links{display:none}
+      .hamburger{display:flex}
+      .feat-grid{grid-template-columns:1fr}
+      .form-row{grid-template-columns:1fr}
+      .inq-wrap{padding:2.5rem 1.5rem}
+      .hero{padding:5rem 0 3rem}
+      .features,.how,.demo-section,.report-section,.inquiry{padding:4rem 0}
+    }
+    /* mobile nav overlay */
+    .mob-nav{position:fixed;inset:0;z-index:200;background:rgba(10,10,15,.97);
+      display:none;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem}
+    .mob-nav.open{display:flex}
+    .mob-nav-link{font-family:'Syne',sans-serif;font-weight:700;font-size:1.5rem;
+      color:var(--muted);text-decoration:none;transition:color .2s}
+    .mob-nav-link:hover{color:var(--pL)}
+    .mob-close{position:absolute;top:1.5rem;right:1.5rem;background:none;border:none;
+      cursor:pointer;color:var(--muted);font-size:1.5rem}
+  </style>
+</head>
+<body>
+
+<div class="bg-layer">
+  <div class="bg-orb bg-orb-1"></div>
+  <div class="bg-orb bg-orb-2"></div>
+  <div class="bg-orb bg-orb-3"></div>
+  <div class="bg-grid"></div>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-i">
+    <a href="https://maluxdata.io" class="logo-wrap">
+      <svg width="26" height="26" viewBox="0 0 48 48" fill="none">
+        <rect x="4" y="4" width="40" height="40" rx="6" stroke="#AFA9EC" stroke-width="1.3"/>
+        <circle cx="16" cy="20" r="4.5" fill="#EEEDFE"/>
+        <circle cx="30" cy="28" r="3" fill="#AFA9EC"/>
+        <circle cx="20" cy="32" r="3.5" fill="#7F77DD"/>
+        <circle cx="34" cy="16" r="2.5" fill="#AFA9EC" opacity=".7"/>
+        <line x1="16" y1="20" x2="30" y2="28" stroke="#AFA9EC" stroke-width=".8" opacity=".35"/>
+        <line x1="30" y1="28" x2="20" y2="32" stroke="#7F77DD" stroke-width=".8" opacity=".35"/>
+        <line x1="16" y1="20" x2="34" y2="16" stroke="#AFA9EC" stroke-width=".8" opacity=".25"/>
+      </svg>
+      <div>
+        <div class="logo-name">Ma<em>Lux</em> <span style="color:var(--muted);font-weight:400;font-size:.95rem">· LUMINA</span></div>
+        <span class="logo-tag">Data Consulting</span>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="#features" class="nav-tab">Features</a>
+      <a href="#how" class="nav-tab">How it works</a>
+      <a href="#demo" class="nav-tab">Demo</a>
+      <a href="#report" class="nav-tab">The Report</a>
+      <a href="#inquiry" class="nav-tab">Hire me</a>
+    </div>
+    <div style="display:flex;align-items:center;gap:.5rem">
+      <a href="https://lumina.maluxdata.io" target="_blank" class="nav-cta">Open LUMINA ↗</a>
+      <button class="hamburger" id="hbg" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- MOBILE NAV -->
+<div class="mob-nav" id="mobnav">
+  <button class="mob-close" id="mobclose">✕</button>
+  <a href="#features" class="mob-nav-link" onclick="closeMob()">Features</a>
+  <a href="#how" class="mob-nav-link" onclick="closeMob()">How it works</a>
+  <a href="#demo" class="mob-nav-link" onclick="closeMob()">Demo</a>
+  <a href="#report" class="mob-nav-link" onclick="closeMob()">The Report</a>
+  <a href="#inquiry" class="mob-nav-link" onclick="closeMob()">Hire me</a>
+  <a href="https://lumina.maluxdata.io" target="_blank" class="btn btn-p" style="margin-top:.5rem">Open LUMINA ↗</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-eyebrow reveal"><span class="pulse"></span>Proprietary BA Framework · MaLux</div>
+        <h1 class="hero-title reveal delay-1">
+          Every engagement<br/>leaves something<br/><span class="hl2">behind.</span>
+        </h1>
+        <p class="hero-sub reveal delay-2">
+          Most analysts deliver outputs and leave. <strong>LUMINA</strong> tracks every stage, decision, note, and deliverable — then auto-generates a branded report your client keeps <strong>forever</strong>.
+        </p>
+        <div class="hero-actions reveal delay-3">
+          <a href="https://lumina.maluxdata.io" target="_blank" class="btn btn-p">Try the live app ↗</a>
+          <a href="#demo" class="btn btn-g">See screenshots</a>
+          <a href="#inquiry" class="btn btn-g">Hire Valentina</a>
+        </div>
+        <div class="hero-proof reveal delay-4">
+          <div class="proof-item"><span class="proof-dot"></span>Live & deployed</div>
+          <div class="proof-item"><span class="proof-dot"></span>7-stage framework</div>
+          <div class="proof-item"><span class="proof-dot"></span>Auto PDF reports</div>
+          <div class="proof-item"><span class="proof-dot"></span>Client-ready</div>
+        </div>
+      </div>
+
+      <!-- App window mock -->
+      <div class="reveal-right delay-2">
+        <div class="app-window">
+          <div class="win-bar">
+            <div class="win-dot" style="background:#ff5f57"></div>
+            <div class="win-dot" style="background:#ffbd2e"></div>
+            <div class="win-dot" style="background:#28c840"></div>
+            <div class="win-url">lumina.maluxdata.io</div>
+          </div>
+          <div class="win-body">
+            <div class="win-sb">
+              <div class="win-logo">
+                <svg width="18" height="18" viewBox="0 0 48 48" fill="none">
+                  <rect x="4" y="4" width="40" height="40" rx="6" stroke="#AFA9EC" stroke-width="1.3"/>
+                  <circle cx="16" cy="20" r="4.5" fill="#EEEDFE"/>
+                  <circle cx="30" cy="28" r="3" fill="#AFA9EC"/>
+                  <circle cx="20" cy="32" r="3.5" fill="#7F77DD"/>
+                </svg>
+                <div class="win-logo-t">Ma<em>Lux</em></div>
+              </div>
+              <div class="wn a"><div class="wn-dot p"></div>Dashboard</div>
+              <div class="wn"><div class="wn-dot"></div>Engagements</div>
+              <div class="wn"><div class="wn-dot"></div>Method Guide</div>
+              <div style="margin-top:auto;padding-top:.75rem;border-top:1px solid var(--border);
+                font-family:'DM Mono',monospace;font-size:.55rem;color:var(--faint);padding-left:.6rem;margin-top:1.5rem">
+                maluxdata.io
+              </div>
+            </div>
+            <div class="win-main">
+              <div class="wm-h">
+                <div>
+                  <div class="wm-title">Good morning, Valentina</div>
+                  <div class="wm-sub">LUMINA · Engagement Intelligence Dashboard</div>
+                </div>
+                <div class="wm-btn">+ New</div>
+              </div>
+              <div class="stats-row">
+                <div class="stat"><div class="stat-n" style="color:var(--purple)">2</div><div class="stat-l">Active</div></div>
+                <div class="stat"><div class="stat-n" style="color:var(--mint)">1</div><div class="stat-l">Done</div></div>
+                <div class="stat"><div class="stat-n" style="color:var(--pL)">8</div><div class="stat-l">Delivered</div></div>
+                <div class="stat"><div class="stat-n" style="color:var(--muted)">0</div><div class="stat-l">Blockers</div></div>
+              </div>
+              <div class="e-card">
+                <div class="e-row">
+                  <div class="e-ring">72%</div>
+                  <div style="flex:1">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                      <div class="e-name">NMBI</div>
+                      <span class="badge badge-p">active</span>
+                    </div>
+                    <div class="e-meta">Healthcare · Contractor</div>
+                    <div class="stages-bar">
+                      <div class="sb d"></div><div class="sb d"></div><div class="sb a"></div>
+                      <div class="sb"></div><div class="sb"></div><div class="sb"></div><div class="sb"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="e-card" style="opacity:.6">
+                <div class="e-row">
+                  <div class="e-ring" style="border-color:var(--mint);color:var(--mint)">100%</div>
+                  <div style="flex:1">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                      <div class="e-name">Acme Corp</div>
+                      <span class="badge badge-m">done</span>
+                    </div>
+                    <div class="e-meta">FinTech · Project</div>
+                    <div class="stages-bar">
+                      <div class="sb d"></div><div class="sb d"></div><div class="sb d"></div>
+                      <div class="sb d"></div><div class="sb d"></div><div class="sb d"></div><div class="sb d"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="div"/>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="wrap">
+    <div class="feat-intro reveal">
+      <div class="s-label">What LUMINA does</div>
+      <h2 class="s-title">Built for how BAs <em style="font-style:normal;color:var(--pL)">actually</em> work</h2>
+      <p class="s-desc">Not a generic project tool. Every feature maps directly to the real rhythm of a data consultancy engagement.</p>
+    </div>
+    <div class="feat-grid">
+      <div class="feat-card reveal delay-1">
+        <span class="feat-icon">🔍</span>
+        <div class="feat-title">Structured Client Intake</div>
+        <p class="feat-desc">Systems inventory, data maturity baseline scored 1–25, scope boundary — all captured formally before work begins. No more verbal agreements.</p>
+        <span class="feat-tag">Layer 01 · Intake</span>
+      </div>
+      <div class="feat-card reveal delay-2">
+        <span class="feat-icon">⚡</span>
+        <div class="feat-title">7-Stage Live Tracker</div>
+        <p class="feat-desc">From Discovery to Engagement Close. Each stage holds notes, sub-stages, decisions, blockers, deliverables — all timestamped and structured.</p>
+        <span class="feat-tag">Layer 02 · Workspace</span>
+      </div>
+      <div class="feat-card reveal delay-3">
+        <span class="feat-icon">🔗</span>
+        <div class="feat-title">Client Read-Only View</div>
+        <p class="feat-desc">Share a live progress link. Clients see current stage, completion %, what's delivered, what's blocked — and can comment. They can't edit a thing.</p>
+        <span class="feat-tag">Client Portal</span>
+      </div>
+      <div class="feat-card reveal delay-1">
+        <span class="feat-icon">📊</span>
+        <div class="feat-title">Weekly Pulse Signal</div>
+        <p class="feat-desc">A 10-minute Friday ritual. Health status, blockers, delivery log, analyst note. Builds a timeline of engagement honesty automatically.</p>
+        <span class="feat-tag">Layer 03 · Pulse</span>
+      </div>
+      <div class="feat-card reveal delay-2">
+        <span class="feat-icon">🗺️</span>
+        <div class="feat-title">Systems Intelligence Map</div>
+        <p class="feat-desc">Document the client's data landscape as you discover it. Systems, owners, upstream feeds, downstream outputs. The map nobody else builds.</p>
+        <span class="feat-tag">Systems Tab</span>
+      </div>
+      <div class="feat-card reveal delay-3">
+        <span class="feat-icon">📄</span>
+        <div class="feat-title">Auto-Generated PDF Report</div>
+        <p class="feat-desc">One click. A fully branded, multi-section leave-behind built from everything captured throughout. Cover page, maturity delta, decisions log, recommendations.</p>
+        <span class="feat-tag">Layer 04 · Leave-Behind</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="div"/>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="wrap">
+    <div class="how-inner">
+      <div>
+        <div class="s-label reveal">The LUMINA Method</div>
+        <h2 class="s-title reveal delay-1">Four layers.<br/>One coherent output.</h2>
+        <div class="step-list" id="stepList">
+          <div class="step open" data-step="0" onclick="openStep(this)">
+            <div class="step-num">01</div>
+            <div class="step-body">
+              <div class="step-title">Client Intake & Scope</div>
+              <div class="step-desc">Before any work begins, LUMINA captures the client's systems, rates their data maturity on a 25-point scale, documents scope boundaries, and logs known data problems — in their own words. The client acknowledges it. No surprises.</div>
+            </div>
+          </div>
+          <div class="step" data-step="1" onclick="openStep(this)">
+            <div class="step-num">02</div>
+            <div class="step-body">
+              <div class="step-title">Live Engagement Workspace</div>
+              <div class="step-desc">Every session adds to the living record. Notes, decisions, blockers (typed as Data/People/Technical/Unclear), sub-stages, and deliverables — all timestamped. The document builds itself as you work.</div>
+            </div>
+          </div>
+          <div class="step" data-step="2" onclick="openStep(this)">
+            <div class="step-num">03</div>
+            <div class="step-body">
+              <div class="step-title">Weekly Pulse Signal</div>
+              <div class="step-desc">Every Friday, 10 minutes. Log overall health (green/amber/red), what was delivered, active blockers, and an honest analyst note. This builds a timeline of how the engagement actually went — invaluable for retros and next proposals.</div>
+            </div>
+          </div>
+          <div class="step" data-step="3" onclick="openStep(this)">
+            <div class="step-num">04</div>
+            <div class="step-body">
+              <div class="step-title">Leave-Behind PDF Report</div>
+              <div class="step-desc">Started at the midpoint, finalised at close. One click generates a branded PDF with cover page, executive summary, systems map, process docs, decisions log, maturity score delta, and open recommendations. The client keeps it forever.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sticky visual -->
+      <div class="how-visual reveal-right">
+        <div class="visual-card" id="visualCard">
+
+          <!-- Panel 0: Maturity score -->
+          <div class="vpanel show" id="vp0">
+            <div class="visual-title">📊 Data Maturity Assessment</div>
+            <p style="font-size:.8rem;color:var(--muted);margin-bottom:1rem">Scored across 5 dimensions at intake and close.</p>
+            <div class="mat-bar-wrap">
+              <div class="mat-label"><span>Single source of truth</span><span style="color:var(--pL)">2 → 4</span></div>
+              <div class="mat-bar"><div class="mat-fill" style="width:80%"></div></div>
+              <div class="mat-label"><span>Data definitions consistent</span><span style="color:var(--pL)">2 → 3</span></div>
+              <div class="mat-bar"><div class="mat-fill" style="width:60%"></div></div>
+              <div class="mat-label"><span>Quality monitored</span><span style="color:var(--pL)">3 → 4</span></div>
+              <div class="mat-bar"><div class="mat-fill" style="width:80%"></div></div>
+              <div class="mat-label"><span>Self-service accessible</span><span style="color:var(--amber)">2 → 2</span></div>
+              <div class="mat-bar"><div class="mat-fill" style="width:40%;background:linear-gradient(90deg,var(--amber),var(--amber))"></div></div>
+              <div class="mat-label"><span>Decisions traceable</span><span style="color:var(--pL)">2 → 4</span></div>
+              <div class="mat-bar"><div class="mat-fill" style="width:80%"></div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:.75rem;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border)">
+              <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;color:var(--text)">11 <span style="color:var(--muted);font-size:.8rem">→</span> 17</div>
+              <div style="font-family:'DM Mono',monospace;font-size:.65rem">
+                <div style="color:var(--muted)">Aware → Structured</div>
+                <div style="color:var(--mint)">+6 pts improvement ▲</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel 1: Stage tracker -->
+          <div class="vpanel" id="vp1">
+            <div class="visual-title">⚡ Stage Progress</div>
+            <p style="font-size:.8rem;color:var(--muted);margin-bottom:1.25rem">Live view of all 7 engagement stages.</p>
+            <div class="stage-list">
+              <div class="stage-item">
+                <span class="stage-icon">🔍</span>
+                <span class="stage-name">Discovery & Intake</span>
+                <div class="stage-bar-wrap"><div class="stage-bar"><div class="stage-fill sf-done" style="width:100%"></div></div></div>
+                <span class="stage-pct" style="color:var(--mint)">100%</span>
+              </div>
+              <div class="stage-item">
+                <span class="stage-icon">📊</span>
+                <span class="stage-name">Current State Analysis</span>
+                <div class="stage-bar-wrap"><div class="stage-bar"><div class="stage-fill sf-done" style="width:100%"></div></div></div>
+                <span class="stage-pct" style="color:var(--mint)">100%</span>
+              </div>
+              <div class="stage-item">
+                <span class="stage-icon">⚡</span>
+                <span class="stage-name">Gap Identification</span>
+                <div class="stage-bar-wrap"><div class="stage-bar"><div class="stage-fill sf-active" style="width:65%"></div></div></div>
+                <span class="stage-pct" style="color:var(--pL)">65%</span>
+              </div>
+              <div class="stage-item">
+                <span class="stage-icon">🎯</span>
+                <span class="stage-name">Solution Design</span>
+                <div class="stage-bar-wrap"><div class="stage-bar"><div class="stage-fill sf-empty" style="width:0%"></div></div></div>
+                <span class="stage-pct">0%</span>
+              </div>
+              <div class="stage-item">
+                <span class="stage-icon">🚀</span>
+                <span class="stage-name">Delivery</span>
+                <div class="stage-bar-wrap"><div class="stage-bar"><div class="stage-fill sf-empty" style="width:0%"></div></div></div>
+                <span class="stage-pct">0%</span>
+              </div>
+              <div class="stage-item">
+                <span class="stage-icon">📚</span>
+                <span class="stage-name">Knowledge Transfer</span>
+                <div class="stage-bar-wrap"><div class="stage-bar"><div class="stage-fill sf-empty" style="width:0%"></div></div></div>
+                <span class="stage-pct">0%</span>
+              </div>
+              <div class="stage-item">
+                <span class="stage-icon">✅</span>
+                <span class="stage-name">Engagement Close</span>
+                <div class="stage-bar-wrap"><div class="stage-bar"><div class="stage-fill sf-empty" style="width:0%"></div></div></div>
+                <span class="stage-pct">0%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel 2: Pulse -->
+          <div class="vpanel" id="vp2">
+            <div class="visual-title">📶 Weekly Pulse — Week 4</div>
+            <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:1rem">
+              <span style="width:8px;height:8px;border-radius:50%;background:var(--mint);display:inline-block"></span>
+              <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--mint)">🟢 On Track</span>
+            </div>
+            <div style="background:var(--s2);border-radius:.6rem;padding:1rem;margin-bottom:.6rem">
+              <div style="font-family:'DM Mono',monospace;font-size:.6rem;color:var(--muted);margin-bottom:.4rem">SUMMARY</div>
+              <p style="font-size:.8rem;color:var(--text);line-height:1.5">Gap analysis completed. CRM qualification links mapped. Remediation approach agreed with stakeholder.</p>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
+              <div style="background:var(--s2);border-radius:.5rem;padding:.75rem">
+                <div style="font-family:'DM Mono',monospace;font-size:.55rem;color:var(--muted);margin-bottom:.3rem">DELIVERED</div>
+                <p style="font-size:.72rem;color:var(--text)">Gap analysis report · Data flow diagram</p>
+              </div>
+              <div style="background:var(--s2);border-radius:.5rem;padding:.75rem">
+                <div style="font-family:'DM Mono',monospace;font-size:.55rem;color:var(--muted);margin-bottom:.3rem">NEXT WEEK</div>
+                <p style="font-size:.72rem;color:var(--text)">Solution design · Stakeholder walkthrough</p>
+              </div>
+            </div>
+            <div style="margin-top:.75rem;padding:.75rem;border:1px solid var(--border);border-radius:.5rem;
+              font-family:'DM Mono',monospace;font-size:.65rem;color:var(--faint);font-style:italic">
+              "Engagement is progressing well. Key decision on remediation approach made and logged."
+            </div>
+          </div>
+
+          <!-- Panel 3: PDF preview -->
+          <div class="vpanel" id="vp3">
+            <div class="visual-title">📄 Leave-Behind Report</div>
+            <p style="font-size:.8rem;color:var(--muted);margin-bottom:1rem">Auto-assembled from all engagement data.</p>
+            <div style="background:linear-gradient(135deg,rgba(124,92,252,.12),rgba(252,92,125,.06));
+              border:1px solid rgba(124,92,252,.2);border-radius:.6rem;padding:1rem;
+              text-align:center;margin-bottom:.75rem">
+              <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:.95rem;color:var(--text)">LUMINA ENGAGEMENT REPORT</div>
+              <div style="font-family:'DM Mono',monospace;font-size:.6rem;color:var(--muted);margin-top:.25rem">NMBI · June–Sept 2025 · Valentina · MaLux</div>
+              <div style="display:flex;align-items:center;justify-content:center;gap:.75rem;margin-top:.65rem">
+                <span style="font-family:'Syne',sans-serif;font-weight:700;color:var(--pL);font-size:.85rem">72%</span>
+                <span style="font-family:'DM Mono',monospace;font-size:.6rem;color:var(--mint)">+6 pts maturity ▲</span>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:.25rem">
+              <div style="display:flex;align-items:center;gap:.5rem;padding:.45rem .6rem;background:var(--s2);border-radius:.35rem;font-family:'DM Mono',monospace;font-size:.65rem">
+                <span style="color:var(--pL);width:1.2rem">01</span><span style="color:var(--muted);flex:1">Executive Summary</span><span style="color:var(--mint)">✓</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:.5rem;padding:.45rem .6rem;background:var(--s2);border-radius:.35rem;font-family:'DM Mono',monospace;font-size:.65rem">
+                <span style="color:var(--pL);width:1.2rem">02</span><span style="color:var(--muted);flex:1">Systems Intelligence Map</span><span style="color:var(--mint)">✓</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:.5rem;padding:.45rem .6rem;background:var(--s2);border-radius:.35rem;font-family:'DM Mono',monospace;font-size:.65rem">
+                <span style="color:var(--pL);width:1.2rem">04</span><span style="color:var(--muted);flex:1">Data Quality Assessment</span><span style="color:var(--mint)">✓</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:.5rem;padding:.45rem .6rem;background:var(--s2);border-radius:.35rem;font-family:'DM Mono',monospace;font-size:.65rem">
+                <span style="color:var(--pL);width:1.2rem">05</span><span style="color:var(--muted);flex:1">Decisions & Rationale Log</span><span style="color:var(--mint)">✓</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:.5rem;padding:.45rem .6rem;background:var(--s2);border-radius:.35rem;font-family:'DM Mono',monospace;font-size:.65rem">
+                <span style="color:var(--pL);width:1.2rem">07</span><span style="color:var(--muted);flex:1">Data Maturity Score</span><span style="color:var(--mint)">✓</span>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /visual-card -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="div"/>
+
+<!-- DEMO / SCREENSHOTS -->
+<section class="demo-section" id="demo">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="s-label">See it in action</div>
+      <h2 class="s-title">Screenshot tour</h2>
+      <p class="s-desc" style="margin-bottom:2rem">Click through each screen — or open the live app to explore yourself.</p>
+    </div>
+    <div class="demo-tabs reveal delay-1">
+      <button class="dtab on" onclick="showDemo(this,'d0')">Dashboard</button>
+      <button class="dtab" onclick="showDemo(this,'d1')">Stage Workspace</button>
+      <button class="dtab" onclick="showDemo(this,'d2')">Systems Map</button>
+      <button class="dtab" onclick="showDemo(this,'d3')">Weekly Pulse</button>
+      <button class="dtab" onclick="showDemo(this,'d4')">Client View</button>
+      <button class="dtab" onclick="showDemo(this,'d5')">PDF Report</button>
+    </div>
+    <div class="demo-frame reveal delay-2">
+
+      <!-- Dashboard -->
+      <div class="demo-panel show" id="d0">
+        <div class="mock-screen">
+          <div class="mock-bar">
+            <div class="mock-dot" style="background:#ff5f57"></div>
+            <div class="mock-dot" style="background:#ffbd2e"></div>
+            <div class="mock-dot" style="background:#28c840"></div>
+            <div style="flex:1;background:var(--s2);border-radius:.25rem;padding:.2rem .6rem;margin:0 .75rem;font-family:'DM Mono',monospace;font-size:.6rem;color:var(--muted)">lumina.maluxdata.io</div>
+          </div>
+          <div class="mock-body">
+            <div style="display:grid;grid-template-columns:160px 1fr;gap:1rem;min-height:280px">
+              <div style="background:rgba(18,18,26,.8);border-right:1px solid var(--border);padding:.75rem;border-radius:.5rem 0 0 .5rem">
+                <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;color:var(--text);margin-bottom:.75rem">Ma<span style="color:var(--pL)">Lux</span></div>
+                <div style="font-family:'DM Mono',monospace;font-size:.6rem;color:var(--pL);background:rgba(124,92,252,.08);border:1px solid rgba(124,92,252,.2);padding:.4rem .6rem;border-radius:.35rem;margin-bottom:.25rem">▸ Dashboard</div>
+                <div style="font-family:'DM Mono',monospace;font-size:.6rem;color:var(--muted);padding:.4rem .6rem;margin-bottom:.25rem">Engagements</div>
+                <div style="font-family:'DM Mono',monospace;font-size:.6rem;color:var(--muted);padding:.4rem .6rem">Method Guide</div>
+              </div>
+              <div style="padding:1rem">
+                <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;color:var(--text);margin-bottom:.25rem">Good morning, Valentina</div>
+                <div style="font-family:'DM Mono',monospace;font-size:.6rem;color:var(--muted);margin-bottom:.9rem">LUMINA · Engagement Intelligence Dashboard</div>
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;margin-bottom:.9rem">
+                  <div style="background:var(--s2);border:1px solid var(--border);border-radius:.4rem;padding:.6rem .5rem">
+                    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;color:var(--purple)">2</div>
+                    <div style="font-family:'DM Mono',monospace;font-size:.55rem;color:var(--muted)">Active</div>
+                  </div>
+                  <div style="background:var(--s2);border:1px solid var(--border);border-radius:.4rem;padding:.6rem .5rem">
+                    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;color:var(--mint)">1</div>
+                    <div style="font-family:'DM Mono',monospace;font-size:.55rem;color:var(--muted)">Complete</div>
+                  </div>
+                  <div style="background:var(--s2);border:1px solid var(--border);border-radius:.4rem;padding:.6rem .5rem">
+                    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;color:var(--pL)">8</div>
+                    <div style="font-family:'DM Mono',monospace;font-size:.55rem;color:var(--muted)">Delivered</div>
+                  </div>
+                  <div style="background:var(--s2);border:1px solid var(--border);border-radius:.4rem;padding:.6rem .5rem">
+                    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;color:var(--muted)">0</div>
+                    <div style="font-family:'DM Mono',monospace;font-size:.55rem;color:var(--muted)">Blockers</div>
+                  </div>
+                </div>
+                <div style="font-family:'Syne',sans-serif;font-weight:600;font-size:.8rem;color:var(--text);margin-bottom:.5rem">Active Engagements</div>
+                <div style="background:var(--s2);border:1px solid var(--border);border-radius:.5rem;padding:.7rem;display:flex;align-items:center;gap:.65rem">
+                  <div style="width:36px;height:36px;border-radius:50%;border:2px solid var(--purple);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:.6rem;font-weight:700;color:var(--pL);flex-shrink:0">72%</div>
+                  <div style="flex:1">
+                    <div style="display:flex;justify-content:space-between"><span style="font-family:'Syne',sans-serif;font-weight:600;font-size:.75rem;color:var(--text)">NMBI</span><span style="font-family:'DM Mono',monospace;font-size:.55rem;color:var(--pL);background:rgba(124,92,252,.1);border:1px solid rgba(124,92,252,.25);padding:.1rem .35rem;border-radius:100px">active</span></div>
+                    <div style="font-family:'DM Mono',monospace;font-size:.55rem;color:var(--muted);margin-top:2px">Healthcare · Contractor · June 2025</div>
+                    <div style="display:flex;gap:2px;margin-top:.35rem">
+                      <div style="flex:1;height:3px;background:var(--mint);border-radius:2px"></div>
+                      <div style="flex:1;height:3px;background:var(--mint);border-radius:2px"></div>
+                      <div style="flex:1;height:3px;background:var(--purple);border-radius:2px"></div>
+                      <div style="flex:1;height:3px;background:var(--faint);border-radius:2px"></div>
+                      <div style="flex:1;height:3px;background:var(--faint);border-radius:2px"></div>
+                      <div style="flex:1;height:3px;background:var(--faint);border-radius:2px"></div>
+                      <div style="flex:1;height:3px;background:var(--faint);border-radius:2px"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--muted);margin-top:1rem;text-align:center">Dashboard — your analyst home. All engagements, health signals, quick stats at a glance.</p>
+      </div>
+
+      <!-- Stage Workspace -->
+      <div class="demo-panel" id="d1">
+        <div class="mock-screen">
+          <div class="mock-bar"><div class="mock-dot" style="background:#ff5f57"></div><div class="mock-dot" style="background:#ffbd2e"></div><div class="mock-dot" style="background:#28c840"></div><div style="flex:1;background:var(--s2);border-radius:.25rem;padding:.2rem .6rem;margin:0 .75rem;font-family:'DM Mono',monospace;font-size:.6rem;color:var(--muted)">lumina.maluxdata.io · NMBI · Stages</div></div>
+          <div class="mock-body">
+            <div style="margin-bottom:.6rem;display:flex;align-items:center;gap:.5rem;padding:.75rem;background:var(--s2);border:1px solid rgba(124,92,252,.25);border-radius:.6rem">
+              <span style="font-size:.9rem">📊</span>
+              <div style="flex:1">
+                <div style="display:flex;align-items:center;gap:.5rem"><span style="font-family:'Syne',sans-serif;font-weight:600;font-size:.8rem;color:var(--text)">Current State Analysis</span><span style="font-family:'DM Mono',monospace;font-size:.55rem;color:var(--pL);background:rgba(124,92,252,.1);border:1px solid rgba(124,92,252,.25);padding:.1rem .4rem;border-radius:100px">In Progress</span></div>
+                <div style="display:flex;align-items:center;gap:.75rem;margin-top:.35rem">
+                  <div style="flex:1;height:3px;background:var(--s3);border-radius:2px;overflow:hidden"><div style="width:65%;height:100%;background:linear-gradient(90deg,var(--purple),var(--pL));border-radius:2px"></div></div>
+                  <span style="font-family:'DM Mono',monospace;font-size:.55rem;color:var(--muted)">65%</span>
+                </div>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem">
+              <div style="background:var(--s2);border:1px solid var(--border);border-radius:.5rem;padding:.75rem">
+                <div style="font-family:'DM Mono',monospace;font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem">Notes</div>
+                <div style="display:flex;flex-direction:column;gap:.3rem">
+                  <div style="background:var(--s3);border-radius:.3rem;padding:.4rem .5rem;font-size:.68rem;color:var(--text)">· CRM has 847 orphaned qualification records from 2022 migration</div>
+                  <div style="background:var(--s3);border-radius:.3rem;padding:.4rem .5rem;font-size:.68rem;color:var(--pL)">◆ Decision: Remediation in 3 layers</div>
+                  <div style="background:var(--s3);border-radius:.3rem;padding:.4rem .5rem;font-size:.68rem;color:var(--mint)">★ Data flow diagram completed</div>
+                </div>
+              </div>
+              <div style="background:var(--s2);border:1px solid var(--border);border-radius:.5rem;padding:.75rem">
+                <div style="font-family:'DM Mono',monospace;font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem">Deliverables</div>
+                <div style="display:flex;flex-direction:column;gap:.3rem">
+                  <div style="display:flex;align-items:center;gap:.4rem;font-size:.68rem"><span style="color:var(--mint)">✓</span><span style="color:var(--text)">Data audit report</span></div>
+                  <div style="display:flex;align-items:center;gap:.4rem;font-size:.68rem"><span style="color:var(--mint)">✓</span><span style="color:var(--text)">Process map v1</span></div>
+                  <div style="display:flex;align-items:center;gap:.4rem;font-size:.68rem"><span style="color:var(--amber)">◎</span><span style="color:var(--muted)">Stakeholder deck</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--muted);margin-top:1rem;text-align:center">Stage Workspace — notes, decisions, deliverables, blockers. All per stage, all timestamped.</p>
+      </div>
+
+      <!-- Systems Map -->
+      <div class="demo-panel" id="d2">
+        <div class="mock-screen">
+          <div class="mock-bar"><div class="mock-dot" style="background:#ff5f57"></div><div class="mock-dot" style="background:#ffbd2e"></div><div class="mock-dot" style="background:#28c840"></div><div style="flex:1;background:var(--s2);border-radius:.25rem;padding:.2rem .6rem;margin:0 .75rem;font-family:'DM Mono',monospace;font-size:.6rem;color:var(--muted)">lumina.maluxdata.io · NMBI · Systems</div></div>
+          <div class="mock-body">
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;color:var(--text);margin-bottom:.9rem">Systems Intelligence Map</div>
+            <div style="overflow-x:auto">
+              <table style="width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.62rem">
+                <thead><tr style="border-bottom:1px solid var(--border)">
+                  <th style="text-align:left;color:var(--muted);font-weight:400;padding:.35rem .5rem;text-transform:uppercase;font-size:.55rem;letter-spacing:.1em">System</th>
+                  <th style="text-align:left;color:var(--muted);font-weight:400;padding:.35rem .5rem;text-transform:uppercase;font-size:.55rem;letter-spacing:.1em">Purpose</th>
+                  <th style="text-align:left;color:var(--muted);font-weight:400;padding:.35rem .5rem;text-transform:uppercase;font-size:.55rem;letter-spacing:.1em">Owner</th>
+                  <th style="text-align:left;color:var(--muted);font-weight:400;padding:.35rem .5rem;text-transform:uppercase;font-size:.55rem;letter-spacing:.1em">Quality</th>
+                </tr></thead>
+                <tbody>
+                  <tr style="border-bottom:1px solid rgba(42,42,63,.5)"><td style="padding:.5rem;color:var(--text);font-weight:500">CRM</td><td style="padding:.5rem;color:var(--muted)">Registrant records</td><td style="padding:.5rem;color:var(--muted)">Registration</td><td style="padding:.5rem;color:var(--pink)">Orphaned links</td></tr>
+                  <tr style="border-bottom:1px solid rgba(42,42,63,.5)"><td style="padding:.5rem;color:var(--text);font-weight:500">MyNMBI Portal</td><td style="padding:.5rem;color:var(--muted)">Self-service</td><td style="padding:.5rem;color:var(--muted)">Digital / IT</td><td style="padding:.5rem;color:var(--amber)">CRM sync gaps</td></tr>
+                  <tr style="border-bottom:1px solid rgba(42,42,63,.5)"><td style="padding:.5rem;color:var(--text);font-weight:500">PostgreSQL</td><td style="padding:.5rem;color:var(--muted)">Analytics layer</td><td style="padding:.5rem;color:var(--muted)">Data team</td><td style="padding:.5rem;color:var(--mint)">Good</td></tr>
+                  <tr><td style="padding:.5rem;color:var(--text);font-weight:500">Power BI</td><td style="padding:.5rem;color:var(--muted)">Reporting</td><td style="padding:.5rem;color:var(--muted)">Data & Insights</td><td style="padding:.5rem;color:var(--amber)">Refresh issues</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <p style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--muted);margin-top:1rem;text-align:center">Systems Intelligence Map — the data landscape, documented as you discover it. Clients never had this before.</p>
+      </div>
+
+      <!-- Pulse -->
+      <div class="demo-panel" id="d3">
+        <div class="mock-screen">
+          <div class="mock-bar"><div class="mock-dot" style="background:#ff5f57"></div><div class="mock-dot" style="background:#ffbd2e"></div><div class="mock-dot" style="background:#28c840"></div><div style="flex:1;background:var(--s2);border-radius:.25rem;padding:.2rem .6rem;margin:0 .75rem;font-family:'DM Mono',monospace;font-size:.6rem;color:var(--muted)">lumina.maluxdata.io · NMBI · Pulse</div></div>
+          <div class="mock-body" style="display:flex;flex-direction:column;gap:.6rem">
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;color:var(--text)">Weekly Pulse Signal</div>
+            <div style="background:var(--s2);border:1px solid rgba(92,252,184,.2);border-radius:.6rem;padding:.9rem">
+              <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.6rem">
+                <span style="width:7px;height:7px;border-radius:50%;background:var(--mint);display:inline-block"></span>
+                <span style="font-family:'Syne',sans-serif;font-weight:600;font-size:.8rem;color:var(--text)">Week of 2025-07-11</span>
+                <span style="font-family:'DM Mono',monospace;font-size:.55rem;color:var(--mint);background:rgba(92,252,184,.08);border:1px solid rgba(92,252,184,.25);padding:.15rem .4rem;border-radius:100px;margin-left:auto">🟢 On Track</span>
+                <span style="font-family:'DM Mono',monospace;font-size:.55rem;color:var(--pL);background:rgba(124,92,252,.1);border:1px solid rgba(124,92,252,.25);padding:.15rem .4rem;border-radius:100px">Latest</span>
+              </div>
+              <p style="font-size:.75rem;color:var(--text);margin-bottom:.6rem">Gap analysis completed. Remediation approach agreed with stakeholder.</p>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem;font-size:.65rem">
+                <div><span style="color:var(--muted)">Delivered: </span><span style="color:var(--text)">Gap report · Flow diagram</span></div>
+                <div><span style="color:var(--muted)">Next: </span><span style="color:var(--text)">Solution design session</span></div>
+              </div>
+            </div>
+            <div style="background:var(--s2);border:1px solid var(--border);border-radius:.6rem;padding:.9rem;opacity:.6">
+              <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem">
+                <span style="width:7px;height:7px;border-radius:50%;background:var(--amber);display:inline-block"></span>
+                <span style="font-family:'Syne',sans-serif;font-weight:600;font-size:.8rem;color:var(--text)">Week of 2025-07-04</span>
+                <span style="font-family:'DM Mono',monospace;font-size:.55rem;color:var(--amber);background:rgba(252,184,92,.08);border:1px solid rgba(252,184,92,.25);padding:.15rem .4rem;border-radius:100px;margin-left:auto">🟡 Attention</span>
+              </div>
+              <p style="font-size:.75rem;color:var(--muted)">CRM access delayed by IT. Gap analysis in progress but slower than planned.</p>
+            </div>
+          </div>
+        </div>
+        <p style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--muted);margin-top:1rem;text-align:center">Weekly Pulse — 10 minutes every Friday. Health history builds automatically over the engagement.</p>
+      </div>
+
+      <!-- Client View -->
+      <div class="demo-panel" id="d4">
+        <div class="mock-screen">
+          <div class="mock-bar"><div class="mock-dot" style="background:#ff5f57"></div><div class="mock-dot" style="background:#ffbd2e"></div><div class="mock-dot" style="background:#28c840"></div><div style="flex:1;background:var(--s2);border-radius:.25rem;padding:.2rem .6rem;margin:0 .75rem;font-family:'DM Mono',monospace;font-size:.6rem;color:var(--muted)">lumina.maluxdata.io · Client View · Read Only 🔒</div></div>
+          <div class="mock-body">
+            <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border)">
+              <svg width="20" height="20" viewBox="0 0 48 48" fill="none"><rect x="4" y="4" width="40" height="40" rx="6" stroke="#AFA9EC" stroke-width="1.3"/><circle cx="16" cy="20" r="4.5" fill="#EEEDFE"/><circle cx="30" cy="28" r="3" fill="#AFA9EC"/><circle cx="20" cy="32" r="3.5" fill="#7F77DD"/></svg>
+              <div>
+                <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;color:var(--text)">NMBI</div>
+                <div style="font-family:'DM Mono',monospace;font-size:.58rem;color:var(--muted)">LUMINA Engagement View · Read Only</div>
+              </div>
+              <span style="margin-left:auto;font-family:'DM Mono',monospace;font-size:.58rem;color:var(--mint);background:rgba(92,252,184,.08);border:1px solid rgba(92,252,184,.25);padding:.2rem .55rem;border-radius:100px">🟢 On Track</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem">
+              <div style="width:60px;height:60px;border-radius:50%;border:3px solid var(--purple);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;color:var(--pL);font-size:.75rem;flex-shrink:0">72%</div>
+              <div>
+                <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;color:var(--text)">Healthcare Regulation · Contractor</div>
+                <p style="font-family:'DM Mono',monospace;font-size:.62rem;color:var(--muted);margin-top:.2rem">CRM remediation & data platform analysis engagement</p>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:.35rem">
+              <div style="background:var(--s2);border:1px solid var(--border);border-radius:.5rem;padding:.65rem;display:flex;align-items:center;gap:.6rem">
+                <span style="font-size:.85rem">🔍</span><span style="font-family:'DM Mono',monospace;font-size:.65rem;color:var(--text);flex:1">Discovery & Intake</span>
+                <div style="width:60px;height:3px;background:var(--mint);border-radius:2px"></div>
+                <span style="font-family:'DM Mono',monospace;font-size:.6rem;color:var(--mint)">100%</span>
+              </div>
+              <div style="background:var(--s2);border:1px solid rgba(124,92,252,.2);border-radius:.5rem;padding:.65rem;display:flex;align-items:center;gap:.6rem">
+                <span style="font-size:.85rem">📊</span><span style="font-family:'DM Mono',monospace;font-size:.65rem;color:var(--text);flex:1">Current State Analysis</span>
+                <div style="width:60px;height:3px;background:var(--s3);border-radius:2px;overflow:hidden"><div style="width:65%;height:100%;background:var(--purple);border-radius:2px"></div></div>
+                <span style="font-family:'DM Mono',monospace;font-size:.6rem;color:var(--pL)">65%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--muted);margin-top:1rem;text-align:center">Client View — shareable read-only link. Clients see progress and can comment. Cannot edit anything.</p>
+      </div>
+
+      <!-- PDF Report -->
+      <div class="demo-panel" id="d5">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+          <div class="mock-screen">
+            <div style="background:linear-gradient(135deg,rgba(124,92,252,.2),rgba(252,92,125,.1));padding:1.5rem;text-align:center;border-bottom:1px solid var(--border)">
+              <svg width="28" height="28" viewBox="0 0 48 48" fill="none" style="margin:0 auto .6rem"><rect x="4" y="4" width="40" height="40" rx="6" stroke="#AFA9EC" stroke-width="1.3"/><circle cx="16" cy="20" r="4.5" fill="#EEEDFE"/><circle cx="30" cy="28" r="3" fill="#AFA9EC"/><circle cx="20" cy="32" r="3.5" fill="#7F77DD"/></svg>
+              <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:.9rem;color:var(--text)">LUMINA ENGAGEMENT REPORT</div>
+              <div style="font-family:'DM Mono',monospace;font-size:.58rem;color:var(--muted);margin-top:.2rem">NMBI · June–Sept 2025</div>
+              <div style="font-family:'DM Mono',monospace;font-size:.58rem;color:var(--muted)">Valentina · MaLux Data Consulting</div>
+              <div style="display:flex;justify-content:center;gap:.6rem;margin-top:.6rem">
+                <span style="font-family:'Syne',sans-serif;font-weight:700;color:var(--pL);font-size:.8rem">72%</span>
+                <span style="font-family:'DM Mono',monospace;font-size:.58rem;color:var(--mint)">+6 pts ▲</span>
+              </div>
+            </div>
+            <div style="padding:.9rem">
+              <div style="display:flex;align-items:center;gap:.5rem;padding:.4rem 0;border-bottom:1px solid rgba(42,42,63,.5);font-family:'DM Mono',monospace;font-size:.62rem"><span style="color:var(--pL);width:1rem">01</span><span style="color:var(--muted);flex:1">Executive Summary</span><span style="color:var(--mint)">✓</span></div>
+              <div style="display:flex;align-items:center;gap:.5rem;padding:.4rem 0;border-bottom:1px solid rgba(42,42,63,.5);font-family:'DM Mono',monospace;font-size:.62rem"><span style="color:var(--pL);width:1rem">02</span><span style="color:var(--muted);flex:1">Systems Intelligence Map</span><span style="color:var(--mint)">✓</span></div>
+              <div style="display:flex;align-items:center;gap:.5rem;padding:.4rem 0;border-bottom:1px solid rgba(42,42,63,.5);font-family:'DM Mono',monospace;font-size:.62rem"><span style="color:var(--pL);width:1rem">03</span><span style="color:var(--muted);flex:1">Process Documentation</span><span style="color:var(--mint)">✓</span></div>
+              <div style="display:flex;align-items:center;gap:.5rem;padding:.4rem 0;border-bottom:1px solid rgba(42,42,63,.5);font-family:'DM Mono',monospace;font-size:.62rem"><span style="color:var(--pL);width:1rem">04</span><span style="color:var(--muted);flex:1">Data Quality Assessment</span><span style="color:var(--mint)">✓</span></div>
+              <div style="display:flex;align-items:center;gap:.5rem;padding:.4rem 0;font-family:'DM Mono',monospace;font-size:.62rem"><span style="color:var(--pL);width:1rem">05</span><span style="color:var(--muted);flex:1">Decisions & Rationale</span><span style="color:var(--mint)">✓</span></div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;justify-content:center;gap:1rem">
+            <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;color:var(--text)">Auto-generated in one click</h3>
+            <p style="font-size:.875rem;color:var(--muted);line-height:1.65">Everything you've captured throughout the engagement is assembled into a branded, structured PDF your client keeps forever.</p>
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:.5rem">
+              <li style="display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:var(--muted)"><span style="color:var(--mint)">✓</span>MaLux branded cover page</li>
+              <li style="display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:var(--muted)"><span style="color:var(--mint)">✓</span>Maturity score delta + narrative</li>
+              <li style="display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:var(--muted)"><span style="color:var(--mint)">✓</span>Full decisions & rationale log</li>
+              <li style="display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:var(--muted)"><span style="color:var(--mint)">✓</span>Open items prioritised by urgency</li>
+              <li style="display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:var(--muted)"><span style="color:var(--mint)">✓</span>Confidentiality footer on every page</li>
+            </ul>
+            <a href="https://lumina.maluxdata.io" target="_blank" class="btn btn-p" style="align-self:flex-start">Generate one now ↗</a>
+          </div>
+        </div>
+        <p style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--muted);margin-top:1.5rem;text-align:center">PDF Report — assembled automatically from all your notes, decisions, and observations. The thing that makes you unforgettable.</p>
+      </div>
+
+    </div><!-- /demo-frame -->
+  </div>
+</section>
+
+<hr class="div"/>
+
+<!-- THE REPORT -->
+<section class="report-section" id="report">
+  <div class="wrap">
+    <div class="report-grid">
+      <div class="reveal-left">
+        <div class="s-label">The leave-behind</div>
+        <h2 class="s-title">Not a report.<br/>Institutional memory.</h2>
+        <p class="s-desc" style="margin-bottom:1.5rem">Most analysts deliver and leave. With LUMINA, clients walk away with a permanent, structured record of their own systems, decisions, and data landscape — written by an expert who now understands it better than anyone.</p>
+        <ul class="checklist">
+          <li><span class="chk">✓</span><div><strong>Executive Summary</strong>Plain-language overview. Readable by the CEO, not just the IT team.</div></li>
+          <li><span class="chk">✓</span><div><strong>Systems Intelligence Map</strong>Their data landscape, documented. The thing they didn't have before you arrived.</div></li>
+          <li><span class="chk">✓</span><div><strong>Data Quality Assessment</strong>What was found, severity, and what to do about it — framed as opportunity.</div></li>
+          <li><span class="chk">✓</span><div><strong>Decisions & Rationale Log</strong>Every decision made and why. Irreplaceable institutional memory.</div></li>
+          <li><span class="chk">✓</span><div><strong>Maturity Score Delta</strong>Where they started, where they ended, what moved and why.</div></li>
+        </ul>
+      </div>
+      <div class="reveal-right delay-2">
+        <div class="report-mock">
+          <div class="rep-cover">
+            <svg class="rep-logo-mark" width="36" height="36" viewBox="0 0 48 48" fill="none">
+              <rect x="4" y="4" width="40" height="40" rx="6" stroke="#AFA9EC" stroke-width="1.3"/>
+              <circle cx="16" cy="20" r="4.5" fill="#EEEDFE"/>
+              <circle cx="30" cy="28" r="3" fill="#AFA9EC"/>
+              <circle cx="20" cy="32" r="3.5" fill="#7F77DD"/>
+              <circle cx="34" cy="16" r="2.5" fill="#AFA9EC" opacity=".7"/>
+              <line x1="16" y1="20" x2="30" y2="28" stroke="#AFA9EC" stroke-width=".8" opacity=".35"/>
+              <line x1="30" y1="28" x2="20" y2="32" stroke="#7F77DD" stroke-width=".8" opacity=".35"/>
+              <line x1="16" y1="20" x2="34" y2="16" stroke="#AFA9EC" stroke-width=".8" opacity=".25"/>
+            </svg>
+            <div class="rep-title">LUMINA ENGAGEMENT REPORT</div>
+            <div class="rep-meta">Client Organisation · Engagement Period</div>
+            <div class="rep-meta">Prepared by Valentina · MaLux Data Consulting</div>
+            <div class="rep-score">
+              <div class="rep-pct">72% Complete</div>
+              <div class="rep-delta">+6 pts maturity ▲</div>
+            </div>
+          </div>
+          <div class="rep-body">
+            <div class="rep-row"><span class="rep-num">01</span><span class="rep-name">Executive Summary</span><span class="rep-check">✓</span></div>
+            <div class="rep-row"><span class="rep-num">02</span><span class="rep-name">Systems Intelligence Map</span><span class="rep-check">✓</span></div>
+            <div class="rep-row"><span class="rep-num">03</span><span class="rep-name">Process Documentation</span><span class="rep-check">✓</span></div>
+            <div class="rep-row"><span class="rep-num">04</span><span class="rep-name">Data Quality Assessment</span><span class="rep-check">✓</span></div>
+            <div class="rep-row"><span class="rep-num">05</span><span class="rep-name">Decisions & Rationale Log</span><span class="rep-check">✓</span></div>
+            <div class="rep-row"><span class="rep-num">06</span><span class="rep-name">Open Items & Recommendations</span><span class="rep-check">✓</span></div>
+            <div class="rep-row"><span class="rep-num">07</span><span class="rep-name">Data Maturity Score</span><span class="rep-check">✓</span></div>
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:1.25rem">
+          <a href="https://lumina.maluxdata.io" target="_blank" class="btn btn-p">Generate a report now ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="div"/>
+
+<!-- INQUIRY / HIRE -->
+<section class="inquiry" id="inquiry">
+  <div class="wrap">
+    <div class="inq-wrap">
+      <div class="inq-glow"></div>
+      <div class="inq-grid">
+        <div class="reveal-left">
+          <div class="s-label">Work with MaLux</div>
+          <h2 class="inq-title">Ready to work together?</h2>
+          <p class="inq-desc">Every engagement I run is backed by the LUMINA framework — structured, transparent, and documented. You walk away with a leave-behind your team can actually use.</p>
+          <div class="tags-row" style="margin-bottom:2rem">
+            <span class="tag">Data Strategy</span>
+            <span class="tag">Business Analysis</span>
+            <span class="tag">BI & Dashboards</span>
+            <span class="tag">Data Quality</span>
+            <span class="tag">CRM Remediation</span>
+            <span class="tag">Process Mapping</span>
+            <span class="tag">PropTech Analytics</span>
+            <span class="tag">Healthcare Data</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:.75rem">
+            <a href="mailto:hello@maluxdata.io" style="display:flex;align-items:center;gap:.6rem;font-family:'DM Mono',monospace;font-size:.8rem;color:var(--muted);text-decoration:none;transition:color .15s" onmouseover="this.style.color='#9d84fd'" onmouseout="this.style.color='#6a6a8a'">
+              <span style="color:var(--pL)">✉</span> hello@maluxdata.io
+            </a>
+            <a href="https://linkedin.com/in/valentina-resner" target="_blank" style="display:flex;align-items:center;gap:.6rem;font-family:'DM Mono',monospace;font-size:.8rem;color:var(--muted);text-decoration:none;transition:color .15s" onmouseover="this.style.color='#9d84fd'" onmouseout="this.style.color='#6a6a8a'">
+              <span style="color:var(--pL)">in</span> LinkedIn — Valentina Resner
+            </a>
+            <a href="https://maluxdata.io" style="display:flex;align-items:center;gap:.6rem;font-family:'DM Mono',monospace;font-size:.8rem;color:var(--muted);text-decoration:none;transition:color .15s" onmouseover="this.style.color='#9d84fd'" onmouseout="this.style.color='#6a6a8a'">
+              <span style="color:var(--pL)">↗</span> maluxdata.io — full portfolio
+            </a>
+          </div>
+        </div>
+
+        <!-- Contact form -->
+        <div class="reveal-right delay-1">
+          <div id="formWrap">
+            <form id="inqForm" onsubmit="handleSubmit(event)">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Name *</label>
+                  <input class="form-input" type="text" placeholder="Your name" required/>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Email *</label>
+                  <input class="form-input" type="email" placeholder="your@email.com" required/>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Organisation</label>
+                <input class="form-input" type="text" placeholder="Company or project name"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">What do you need?</label>
+                <select class="form-select">
+                  <option value="" disabled selected>Select engagement type</option>
+                  <option>Data Strategy & Roadmap</option>
+                  <option>Business Analysis</option>
+                  <option>Dashboard & BI Development</option>
+                  <option>Data Quality & Governance</option>
+                  <option>CRM Data Remediation</option>
+                  <option>Process Mapping & Documentation</option>
+                  <option>Something else</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Tell me more</label>
+                <textarea class="form-textarea" placeholder="Brief description of the challenge, timeline, or what you're looking to achieve…"></textarea>
+              </div>
+              <button type="submit" class="form-submit">Send Inquiry →</button>
+              <p class="form-note">Usually responds within 24 hours · Based in Ireland / Croatia · Remote-friendly</p>
+            </form>
+          </div>
+          <div class="success-msg" id="successMsg">
+            <div class="success-icon">🔮</div>
+            <div class="success-title">Message received!</div>
+            <p class="success-desc">Thank you for reaching out. Valentina will be in touch within 24 hours.<br/><br/>
+              <a href="https://lumina.maluxdata.io" target="_blank" style="color:var(--pL)">In the meantime, explore LUMINA live →</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-i">
+      <div class="foot-copy">© 2025 MaLux Data Consulting · All rights reserved · LUMINA is proprietary</div>
+      <div class="foot-links">
+        <a href="https://maluxdata.io" class="foot-link">Portfolio</a>
+        <a href="https://lumina.maluxdata.io" target="_blank" class="foot-link">Open App</a>
+        <a href="mailto:hello@maluxdata.io" class="foot-link">Contact</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ── SCROLL REVEAL ──
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target) } })
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' })
+  document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach(el => observer.observe(el))
+
+  // ── MOBILE NAV ──
+  document.getElementById('hbg').onclick = () => document.getElementById('mobnav').classList.add('open')
+  document.getElementById('mobclose').onclick = () => document.getElementById('mobnav').classList.remove('open')
+  function closeMob(){ document.getElementById('mobnav').classList.remove('open') }
+
+  // ── HOW IT WORKS STEPS ──
+  function openStep(el) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('open'))
+    el.classList.add('open')
+    const idx = parseInt(el.dataset.step)
+    document.querySelectorAll('.vpanel').forEach(p => p.classList.remove('show'))
+    document.getElementById('vp'+idx).classList.add('show')
+  }
+
+  // ── DEMO TABS ──
+  function showDemo(btn, panelId) {
+    document.querySelectorAll('.dtab').forEach(b => b.classList.remove('on'))
+    document.querySelectorAll('.demo-panel').forEach(p => p.classList.remove('show'))
+    btn.classList.add('on')
+    document.getElementById(panelId).classList.add('show')
+  }
+
+  // ── FORM SUBMIT ──
+  function handleSubmit(e) {
+    e.preventDefault()
+    document.getElementById('formWrap').style.display = 'none'
+    document.getElementById('successMsg').style.display = 'block'
+    // In production: replace with Formspree, Netlify Forms, or EmailJS
+    // e.g. fetch('https://formspree.io/f/YOUR_ID', { method:'POST', body: new FormData(e.target) })
+  }
+
+  // ── NAV ACTIVE STATES ──
+  window.addEventListener('scroll', () => {
+    const sections = ['features','how','demo','report','inquiry']
+    const scrollY = window.scrollY + 100
+    sections.forEach(id => {
+      const el = document.getElementById(id)
+      const link = document.querySelector(`.nav-tab[href="#${id}"]`)
+      if(!el || !link) return
+      if(scrollY >= el.offsetTop && scrollY < el.offsetTop + el.offsetHeight) {
+        document.querySelectorAll('.nav-tab').forEach(l => l.classList.remove('active'))
+        link.classList.add('active')
+      }
+    })
+    // Compact nav on scroll
+    document.getElementById('nav').style.padding = window.scrollY > 50 ? '0' : ''
+  })
+</script>
+</body>
+</html>
